@@ -7,9 +7,11 @@ import { ResponseFormatter } from "@/utils/response";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
+import { WalletService } from "@/services/wallets.service";
 
 export class AuthController {
   private authService: AuthService;
+  private walletService: WalletService;
   private jwtSecret: string;
   private refreshSecret: string;
 
@@ -30,6 +32,7 @@ export class AuthController {
     this.jwtSecret = process.env.JWT_SECRET || "bovhoeivfoebwfvbeifpwbqe";
     this.refreshSecret =
       process.env.REFRESH_SECRET || "bovhoeivfoebwfvbeifpwbqe";
+    this.walletService = new WalletService();
   }
 
   public register = async (
@@ -77,6 +80,8 @@ export class AuthController {
         });
         return;
       }
+
+      await this.walletService.createDefaultWallets(user.id);
 
       const accessToken = this.generateAccessToken(user.id);
       const refreshToken = this.generateRefreshToken(user.id);
