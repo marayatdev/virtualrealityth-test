@@ -39,7 +39,7 @@ export class AuthController {
     try {
       const data = req.body;
 
-      if (!data.username || !data.email || !data.password) {
+      if (!data.f_name || !data.l_name || !data.email || !data.password) {
         ResponseFormatter.validationError(res, {
           message: "Missing required fields",
         });
@@ -60,8 +60,9 @@ export class AuthController {
       const generatedUserId = crypto.randomUUID();
 
       const newUser = {
-        user_id: generatedUserId,
-        username: data.username,
+        id: generatedUserId,
+        f_name: data.f_name,
+        l_name: data.l_name,
         email: data.email,
         password: hashedPassword,
       };
@@ -77,8 +78,8 @@ export class AuthController {
         return;
       }
 
-      const accessToken = this.generateAccessToken(user.user_id);
-      const refreshToken = this.generateRefreshToken(user.user_id);
+      const accessToken = this.generateAccessToken(user.id);
+      const refreshToken = this.generateRefreshToken(user.id);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,

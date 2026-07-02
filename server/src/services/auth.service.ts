@@ -4,8 +4,9 @@ import { pool } from "@/config/db";
 import { UserRegister } from "@/types/auth";
 
 interface User extends RowDataPacket {
-  user_id: string;
-  username: string;
+  id: string;
+  f_name: string;
+  l_name: string;
   email: string;
   password: string;
 }
@@ -22,29 +23,31 @@ export class AuthService {
 
   async getUserById(userId: string): Promise<User | null> {
     const [rows] = await pool.execute<User[]>(
-      "SELECT * FROM users WHERE user_id = ? LIMIT 1",
+      "SELECT * FROM users WHERE id = ? LIMIT 1",
       [userId],
     );
 
     return rows.length ? rows[0] : null;
   }
 
-  async registerUser(data: UserRegister & { user_id: string }) {
+  async registerUser(data: UserRegister & { id: string }) {
     const sql = `
-    INSERT INTO users (user_id, username, email, password)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO users (id, f_name, l_name, email, password)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
     await pool.execute(sql, [
-      data.user_id,
-      data.username,
+      data.id,
+      data.f_name,
+      data.l_name,
       data.email,
       data.password,
     ]);
 
     return {
-      user_id: data.user_id,
-      username: data.username,
+      id: data.id,
+      f_name: data.f_name,
+      l_name: data.l_name,
       email: data.email,
     };
   }
