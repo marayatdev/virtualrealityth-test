@@ -138,8 +138,8 @@ export class AuthController {
         return;
       }
 
-      const accessToken = this.generateAccessToken(user.user_id);
-      const refreshToken = this.generateRefreshToken(user.user_id);
+      const accessToken = this.generateAccessToken(user.id);
+      const refreshToken = this.generateRefreshToken(user.id);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
