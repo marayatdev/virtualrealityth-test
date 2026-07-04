@@ -17,20 +17,22 @@ async function seed() {
 
     await connection.execute(
       `
-      INSERT INTO users (id, email, password_hash, full_name)
+      INSERT INTO users (id, email, password, f_name, l_name)
       VALUES
-      (?, ?, ?, ?),
-      (?, ?, ?, ?)
+      (?, ?, ?, ?, ?),
+      (?, ?, ?, ?, ?)
       `,
       [
         userAId,
         "alice@test.com",
-        "hashed_password",
-        "Alice",
+        "123456",
+        "AliceSELL",
+        "Smith",
         userBId,
         "bob@test.com",
-        "hashed_password",
-        "Bob",
+        "123456",
+        "BobBUY",
+        "Johnson",
       ],
     );
 
@@ -54,35 +56,40 @@ async function seed() {
     // 3. WALLETS
     // =========================
 
-    // Alice: มี BTC + THB
     await connection.execute(
       `
-      INSERT INTO wallets (id, user_id, asset_id, available_balance)
-      VALUES
-      (?, ?, ?, ?),
-      (?, ?, ?, ?)
-      `,
+  INSERT INTO wallets (id, user_id, asset_id, available_balance)
+  VALUES
+  (?, ?, ?, ?),
+  (?, ?, ?, ?),
+  (?, ?, ?, ?),
+  (?, ?, ?, ?)
+  `,
       [
+        // Alice BTC
         uuidv4(),
         userAId,
         btcId,
-        1, // 1 BTC
+        1,
 
+        // Alice THB
         uuidv4(),
         userAId,
         thbId,
-        1000000, // 1M THB
-      ],
-    );
+        1000000,
 
-    // Bob: มีแค่ THB
-    await connection.execute(
-      `
-      INSERT INTO wallets (id, user_id, asset_id, available_balance)
-      VALUES
-      (?, ?, ?, ?)
-      `,
-      [uuidv4(), userBId, thbId, 1000000],
+        // Bob BTC
+        uuidv4(),
+        userBId,
+        btcId,
+        0,
+
+        // Bob THB
+        uuidv4(),
+        userBId,
+        thbId,
+        1000000,
+      ],
     );
 
     await connection.commit();

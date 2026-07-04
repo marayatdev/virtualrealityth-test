@@ -1,7 +1,25 @@
-# 🪙 Mini Crypto Exchange API
+## ⚙️ วิธีติดตั้ง Project
 
-โปรเจกต์ Backend จำลองระบบ Exchange สำหรับซื้อขายคริปโต (Cryptocurrency Trading System)
-รองรับการโอนเหรียญ, ฝาก-ถอน, ซื้อขาย และระบบ Matching แบบ Simplified
+1. git clone https://github.com/marayatdev/virtualrealityth-test.git
+2. cd server
+3. ใช้คำสั่ง yarn install เพื่อติดตั้ง node และ dependencies
+4. import SQL ชื่อไฟล์ virtualrealityth.sql
+5. yarn seed เพิ่มข้อมูลเริ่มต้นไว้
+6. yarn seed:reset ล้างข้อมูลทั้งหมด
+7. ตั้งค่า .env
+
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+
+PORT=8000
+JWT_SECRET=zxxxxxz
+REFRESH_SECRET=zxxxxxxz
+
+8. yarn dev
+9. เพิ่ม postman_collection ด้วยไฟล์ virtualrealityth.postman_collection.json
 
 ---
 
@@ -11,8 +29,6 @@
 - TypeScript
 - Express.js
 - MySQL
-- Redis (สำหรับอนาคต / Event System)
-- WebSocket (สำหรับอนาคต / Real-time)
 - JWT Authentication
 - UUID
 
@@ -24,8 +40,7 @@
 
 - สมัครสมาชิก
 - เข้าสู่ระบบ
-- ใช้ JWT Token
-- Middleware ตรวจสอบสิทธิ์
+- ใช้ JWT Token เก็บไว้ใน cookie
 
 ---
 
@@ -58,7 +73,7 @@
 
 ### 🔁 ระบบโอนเงินภายใน (Transfer)
 
-- โอนเหรียญระหว่างผู้ใช้ในระบบ
+- โอนเหรียญระหว่างผู้ใช้ในระบบใช้อีเมล
 - ใช้ Transaction เพื่อความปลอดภัย
 - อัปเดต Wallet ทั้งผู้ส่งและผู้รับ
 - บันทึกประวัติการโอน
@@ -78,14 +93,6 @@
 
 ---
 
-### 🔄 ระบบ Matching (แบบ Simplified)
-
-- ระบบจับคู่คำสั่งซื้อขายทันทีเมื่อสร้าง Order
-- รองรับ Partial Fill
-- สร้าง Trade อัตโนมัติเมื่อ Match สำเร็จ
-
----
-
 ### 📈 ระบบ Trades
 
 - บันทึกธุรกรรมการซื้อขายจริง
@@ -94,59 +101,26 @@
 
 ---
 
-## 🧠 ภาพรวมระบบ
-
-User -> API (Express.js) -> Service Layer -> MySQL (Transaction) -> Wallet / Order / Trade Update
-
----
-
 ## 🗄 โครงสร้างฐานข้อมูลหลัก
 
-- users
-- assets
-- wallets
-- orders
-- trades
-- transfers
-- deposits
-- withdrawals
+- users คือ เก็บข้อมูลผู้ใช้งานระบบ เช่น ชื่อ, อีเมล, รหัสผ่าน (Hash Password) และสถานะของบัญชีผู้ใช้
 
----
+- assets คือ เก็บข้อมูลสินทรัพย์ที่รองรับภายในระบบ ทั้งสกุลเงิน Fiat และ Cryptocurrency เช่น THB, BTC, ETH พร้อมรายละเอียดของแต่ละเหรียญ
 
-## ⚙️ วิธีติดตั้ง
+- wallets คือ กระเป๋าเงินของผู้ใช้สำหรับแต่ละสินทรัพย์ โดยเก็บยอดเงินที่สามารถใช้งานได้ (available_balance) และยอดเงินที่ถูกล็อกไว้สำหรับการซื้อขาย (locked_balance)
 
-1. yarn install
-2. ตั้งค่า .env
-3. import SQL
-4. yarn seed
-5. yarn dev
+- orders คือ เก็บคำสั่งซื้อ (BUY) และคำสั่งขาย (SELL) ของผู้ใช้ รวมถึงราคา จำนวน และสถานะของคำสั่ง เช่น OPEN, PARTIAL, FILLED และ CANCELLED
 
----
+- trades คือ เก็บประวัติการจับคู่คำสั่งซื้อขาย (Matched Order) ระหว่างผู้ซื้อและผู้ขาย พร้อมรายละเอียดราคา จำนวน และค่าธรรมเนียมที่เกิดขึ้น
 
-## 🌱 Seed Data
+- transfers คือ เก็บประวัติการโอนสินทรัพย์ระหว่างผู้ใช้ภายในระบบ รวมถึงผู้โอน ผู้รับ จำนวนสินทรัพย์ และสถานะของการโอน
 
-Alice / Bob พร้อม Wallet BTC + THB
+- deposits คือ เก็บประวัติการฝากสินทรัพย์เข้าสู่ระบบ พร้อมจำนวนสินทรัพย์และสถานะของรายการ เช่น PENDING, CONFIRMED และ FAILED
+
+- withdrawals คือ เก็บประวัติการถอนสินทรัพย์ออกจากระบบ โดยบันทึกจำนวนสินทรัพย์ ค่าธรรมเนียม ที่อยู่ปลายทาง (Address) และสถานะของการถอน
 
 ---
 
 ## 📌 API
 
 Auth / Assets / Wallet / Transfer / Deposit / Withdraw / Orders / Trades
-
----
-
-## 🔥 แนวคิดสำคัญ
-
-- Available vs Locked balance
-- Transaction safety
-- Simplified matching engine
-- Ledger audit system
-
----
-
-## 🚀 Future
-
-- WebSocket
-- Redis Pub/Sub
-- Full Order Book
-- Admin Dashboard

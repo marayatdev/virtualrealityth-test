@@ -8,7 +8,6 @@ async function reset() {
 
     console.log("💣 Resetting database...");
 
-    // ❗ ลำดับสำคัญ (ต้องลบ child → parent)
     await connection.execute(`SET FOREIGN_KEY_CHECKS = 0`);
 
     await connection.execute(`TRUNCATE TABLE trades`);

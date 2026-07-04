@@ -27,8 +27,8 @@
     "start": "node -r tsconfig-paths/register dist/server.js",
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
     "build": "rm -rf dist && tsc && tsc-alias && cp -r data dist/data",
-    "seed": "ts-node src/seed.ts",
-    "seed:reset": "ts-node src/seed-reset.ts"
+    "seed": "ts-node -r tsconfig-paths/register src/seed/seed.ts",
+    "seed:reset": "ts-node -r tsconfig-paths/register src/seed/seed-reset.ts"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
