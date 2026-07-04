@@ -22,6 +22,13 @@ REFRESH_SECRET=zxxxxxxz
 
 ---
 
+## 🚀 ER Diagram
+
+เป็นรูป ชื่อไฟล์ ER-Diagram.png
+หรือเข้าลิ้งค์นี้ : https://drawsql.app/teams/chawalit-marayat/diagrams/test
+
+---
+
 ## 🚀 เทคโนโลยีที่ใช้
 
 - Node.js
