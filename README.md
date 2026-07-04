@@ -3,7 +3,7 @@
 1. git clone https://github.com/marayatdev/virtualrealityth-test.git
 2. cd server
 3. ใช้คำสั่ง yarn install เพื่อติดตั้ง node และ dependencies
-4. import SQL ชื่อไฟล์ virtualrealityth.sql
+4. import SQL ชื่อไฟล์ virtualrealityth.sql (ถ้าไฟล์ใช้ไม่ได้ให้ใช้คำสั่งสร้างในไฟล์ sql.txt)
 5. yarn seed เพิ่มข้อมูลเริ่มต้นไว้
 6. yarn seed:reset ล้างข้อมูลทั้งหมด
 7. ตั้งค่า .env
@@ -38,7 +38,7 @@ REFRESH_SECRET=zxxxxxxz
 
 ### 🔐 ระบบ Authentication
 
-- สมัครสมาชิก
+- สมัครสมาชิก (เมื่อสมัครสมาชิกจะสร้าง wallet ตามจำนวนของ Assets)
 - เข้าสู่ระบบ
 - ใช้ JWT Token เก็บไว้ใน cookie
 

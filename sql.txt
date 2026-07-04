@@ -1,0 +1,135 @@
+CREATE TABLE users (
+    id CHAR(36) PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
+    status ENUM('ACTIVE','SUSPENDED','CLOSED') DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+CREATE TABLE assets (
+    id CHAR(36) PRIMARY KEY,
+    symbol VARCHAR(20) NOT NULL UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    type ENUM('FIAT','CRYPTO') NOT NULL,
+    precision_places INT DEFAULT 8,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE wallets (
+    id CHAR(36) PRIMARY KEY,
+    user_id CHAR(36) NOT NULL,
+    asset_id CHAR(36) NOT NULL,
+
+    available_balance DECIMAL(36,18) DEFAULT 0,
+    locked_balance DECIMAL(36,18) DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE KEY uniq_user_asset (user_id, asset_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_asset_id (asset_id),
+
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (asset_id) REFERENCES assets(id)
+);
+
+
+
+CREATE TABLE orders (
+    id CHAR(36) PRIMARY KEY,
+    user_id CHAR(36) NOT NULL,
+
+    asset_pair VARCHAR(20) NOT NULL, -- BTC_THB
+    side ENUM('BUY','SELL') NOT NULL,
+
+    price DECIMAL(36,18) NOT NULL,
+    original_amount DECIMAL(36,18) NOT NULL,
+    filled_amount DECIMAL(36,18) DEFAULT 0,
+
+    status ENUM('OPEN','PARTIAL','FILLED','CANCELLED') DEFAULT 'OPEN',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_user_id (user_id),
+    INDEX idx_pair (asset_pair),
+    INDEX idx_status (status)
+);
+
+CREATE TABLE trades (
+    id CHAR(36) PRIMARY KEY,
+
+    buy_order_id CHAR(36) NOT NULL,
+    sell_order_id CHAR(36) NOT NULL,
+
+    price DECIMAL(36,18) NOT NULL,
+    amount DECIMAL(36,18) NOT NULL,
+    fee DECIMAL(36,18) DEFAULT 0,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_buy_order (buy_order_id),
+    INDEX idx_sell_order (sell_order_id),
+
+    FOREIGN KEY (buy_order_id) REFERENCES orders(id),
+    FOREIGN KEY (sell_order_id) REFERENCES orders(id)
+);
+
+CREATE TABLE transfers (
+    id CHAR(36) PRIMARY KEY,
+
+    from_user_id CHAR(36) NOT NULL,
+    to_user_id CHAR(36),
+    asset_id CHAR(36) NOT NULL,
+
+    amount DECIMAL(36,18) NOT NULL,
+
+    status ENUM('PENDING','COMPLETED','FAILED') DEFAULT 'PENDING',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_from_user (from_user_id),
+    INDEX idx_to_user (to_user_id),
+
+    FOREIGN KEY (asset_id) REFERENCES assets(id)
+);
+
+CREATE TABLE withdrawals (
+    id CHAR(36) PRIMARY KEY,
+
+    user_id CHAR(36) NOT NULL,
+    asset_id CHAR(36) NOT NULL,
+
+    amount DECIMAL(36,18) NOT NULL,
+    fee DECIMAL(36,18) DEFAULT 0,
+
+    address VARCHAR(255) NOT NULL,
+
+    status ENUM('PENDING','PROCESSING','CONFIRMED','REJECTED') DEFAULT 'PENDING',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_user_id (user_id),
+
+    FOREIGN KEY (asset_id) REFERENCES assets(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE deposits (
+    id CHAR(36) PRIMARY KEY,
+
+    user_id CHAR(36) NOT NULL,
+    asset_id CHAR(36) NOT NULL,
+
+    amount DECIMAL(36,18) NOT NULL,
+
+    status ENUM('PENDING','CONFIRMED','FAILED') DEFAULT 'PENDING',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_user_id (user_id),
+
+    FOREIGN KEY (asset_id) REFERENCES assets(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);

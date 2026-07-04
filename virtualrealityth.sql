@@ -1,169 +1,264 @@
-/*
- Navicat Premium Dump SQL
+-- phpMyAdmin SQL Dump
+-- version 5.2.3
+-- https://www.phpmyadmin.net/
+--
+-- Host: mysql:3306
+-- Generation Time: Jul 04, 2026 at 01:51 PM
+-- Server version: 8.4.10
+-- PHP Version: 8.3.32
 
- Source Server         : virtualrealityth
- Source Server Type    : MySQL
- Source Server Version : 80410 (8.4.10)
- Source Host           : localhost:3306
- Source Schema         : virtualrealityth
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
- Target Server Type    : MySQL
- Target Server Version : 80410 (8.4.10)
- File Encoding         : 65001
 
- Date: 04/07/2026 20:18:45
-*/
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+--
+-- Database: `virtualrealityth`
+--
 
--- ----------------------------
--- Table structure for assets
--- ----------------------------
-DROP TABLE IF EXISTS `assets`;
-CREATE TABLE `assets`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `symbol` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `type` enum('FIAT','CRYPTO') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `precision_places` int NULL DEFAULT 8,
-  `is_active` tinyint(1) NULL DEFAULT 1,
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `assets`
+--
+
+CREATE TABLE `assets` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `symbol` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `type` enum('FIAT','CRYPTO') COLLATE utf8mb4_general_ci NOT NULL,
+  `precision_places` int DEFAULT '8',
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `deposits`
+--
+
+CREATE TABLE `deposits` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `asset_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `amount` decimal(36,18) NOT NULL,
+  `status` enum('PENDING','CONFIRMED','FAILED') COLLATE utf8mb4_general_ci DEFAULT 'PENDING',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `asset_pair` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `side` enum('BUY','SELL') COLLATE utf8mb4_general_ci NOT NULL,
+  `price` decimal(36,18) NOT NULL,
+  `original_amount` decimal(36,18) NOT NULL,
+  `filled_amount` decimal(36,18) DEFAULT '0.000000000000000000',
+  `status` enum('OPEN','PARTIAL','FILLED','CANCELLED') COLLATE utf8mb4_general_ci DEFAULT 'OPEN',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `symbol`(`symbol` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ----------------------------
--- Table structure for deposits
--- ----------------------------
-DROP TABLE IF EXISTS `deposits`;
-CREATE TABLE `deposits`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `asset_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `amount` decimal(36, 18) NOT NULL,
-  `status` enum('PENDING','CONFIRMED','FAILED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'PENDING',
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trades`
+--
+
+CREATE TABLE `trades` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `buy_order_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `sell_order_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `price` decimal(36,18) NOT NULL,
+  `amount` decimal(36,18) NOT NULL,
+  `fee` decimal(36,18) DEFAULT '0.000000000000000000',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transfers`
+--
+
+CREATE TABLE `transfers` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `from_user_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `to_user_id` char(36) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `asset_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `amount` decimal(36,18) NOT NULL,
+  `status` enum('PENDING','COMPLETED','FAILED') COLLATE utf8mb4_general_ci DEFAULT 'PENDING',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `password_hash` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `full_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status` enum('ACTIVE','SUSPENDED','CLOSED') COLLATE utf8mb4_general_ci DEFAULT 'ACTIVE',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `asset_id`(`asset_id` ASC) USING BTREE,
-  CONSTRAINT `deposits_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `deposits_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ----------------------------
--- Table structure for orders
--- ----------------------------
-DROP TABLE IF EXISTS `orders`;
-CREATE TABLE `orders`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `asset_pair` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `side` enum('BUY','SELL') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `price` decimal(36, 18) NOT NULL,
-  `original_amount` decimal(36, 18) NOT NULL,
-  `filled_amount` decimal(36, 18) NULL DEFAULT 0.000000000000000000,
-  `status` enum('OPEN','PARTIAL','FILLED','CANCELLED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'OPEN',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `idx_pair`(`asset_pair` ASC) USING BTREE,
-  INDEX `idx_status`(`status` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for trades
--- ----------------------------
-DROP TABLE IF EXISTS `trades`;
-CREATE TABLE `trades`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `buy_order_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `sell_order_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `price` decimal(36, 18) NOT NULL,
-  `amount` decimal(36, 18) NOT NULL,
-  `fee` decimal(36, 18) NULL DEFAULT 0.000000000000000000,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_buy_order`(`buy_order_id` ASC) USING BTREE,
-  INDEX `idx_sell_order`(`sell_order_id` ASC) USING BTREE,
-  CONSTRAINT `trades_ibfk_1` FOREIGN KEY (`buy_order_id`) REFERENCES `orders` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `trades_ibfk_2` FOREIGN KEY (`sell_order_id`) REFERENCES `orders` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+--
+-- Table structure for table `wallets`
+--
 
--- ----------------------------
--- Table structure for transfers
--- ----------------------------
-DROP TABLE IF EXISTS `transfers`;
-CREATE TABLE `transfers`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `from_user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `to_user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `asset_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `amount` decimal(36, 18) NOT NULL,
-  `status` enum('PENDING','COMPLETED','FAILED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'PENDING',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_from_user`(`from_user_id` ASC) USING BTREE,
-  INDEX `idx_to_user`(`to_user_id` ASC) USING BTREE,
-  INDEX `asset_id`(`asset_id` ASC) USING BTREE,
-  CONSTRAINT `transfers_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+CREATE TABLE `wallets` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `asset_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `available_balance` decimal(36,18) DEFAULT '0.000000000000000000',
+  `locked_balance` decimal(36,18) DEFAULT '0.000000000000000000',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- ----------------------------
--- Table structure for users
--- ----------------------------
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE `users`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `f_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `l_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `status` enum('ACTIVE','SUSPENDED','CLOSED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'ACTIVE',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `email`(`email` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+-- --------------------------------------------------------
 
--- ----------------------------
--- Table structure for wallets
--- ----------------------------
-DROP TABLE IF EXISTS `wallets`;
-CREATE TABLE `wallets`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `asset_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `available_balance` decimal(36, 18) NULL DEFAULT 0.000000000000000000,
-  `locked_balance` decimal(36, 18) NULL DEFAULT 0.000000000000000000,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `uniq_user_asset`(`user_id` ASC, `asset_id` ASC) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `idx_asset_id`(`asset_id` ASC) USING BTREE,
-  CONSTRAINT `wallets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `wallets_ibfk_2` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+--
+-- Table structure for table `withdrawals`
+--
 
--- ----------------------------
--- Table structure for withdrawals
--- ----------------------------
-DROP TABLE IF EXISTS `withdrawals`;
-CREATE TABLE `withdrawals`  (
-  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `asset_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `amount` decimal(36, 18) NOT NULL,
-  `fee` decimal(36, 18) NULL DEFAULT 0.000000000000000000,
-  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `status` enum('PENDING','PROCESSING','CONFIRMED','REJECTED') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'PENDING',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id` ASC) USING BTREE,
-  INDEX `asset_id`(`asset_id` ASC) USING BTREE,
-  CONSTRAINT `withdrawals_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `withdrawals_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+CREATE TABLE `withdrawals` (
+  `id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `user_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `asset_id` char(36) COLLATE utf8mb4_general_ci NOT NULL,
+  `amount` decimal(36,18) NOT NULL,
+  `fee` decimal(36,18) DEFAULT '0.000000000000000000',
+  `address` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `status` enum('PENDING','PROCESSING','CONFIRMED','REJECTED') COLLATE utf8mb4_general_ci DEFAULT 'PENDING',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-SET FOREIGN_KEY_CHECKS = 1;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `assets`
+--
+ALTER TABLE `assets`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `symbol` (`symbol`);
+
+--
+-- Indexes for table `deposits`
+--
+ALTER TABLE `deposits`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `asset_id` (`asset_id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_pair` (`asset_pair`),
+  ADD KEY `idx_status` (`status`);
+
+--
+-- Indexes for table `trades`
+--
+ALTER TABLE `trades`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_buy_order` (`buy_order_id`),
+  ADD KEY `idx_sell_order` (`sell_order_id`);
+
+--
+-- Indexes for table `transfers`
+--
+ALTER TABLE `transfers`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_from_user` (`from_user_id`),
+  ADD KEY `idx_to_user` (`to_user_id`),
+  ADD KEY `asset_id` (`asset_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `wallets`
+--
+ALTER TABLE `wallets`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_user_asset` (`user_id`,`asset_id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_asset_id` (`asset_id`);
+
+--
+-- Indexes for table `withdrawals`
+--
+ALTER TABLE `withdrawals`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `asset_id` (`asset_id`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `deposits`
+--
+ALTER TABLE `deposits`
+  ADD CONSTRAINT `deposits_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`),
+  ADD CONSTRAINT `deposits_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `trades`
+--
+ALTER TABLE `trades`
+  ADD CONSTRAINT `trades_ibfk_1` FOREIGN KEY (`buy_order_id`) REFERENCES `orders` (`id`),
+  ADD CONSTRAINT `trades_ibfk_2` FOREIGN KEY (`sell_order_id`) REFERENCES `orders` (`id`);
+
+--
+-- Constraints for table `transfers`
+--
+ALTER TABLE `transfers`
+  ADD CONSTRAINT `transfers_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`);
+
+--
+-- Constraints for table `wallets`
+--
+ALTER TABLE `wallets`
+  ADD CONSTRAINT `wallets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `wallets_ibfk_2` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`);
+
+--
+-- Constraints for table `withdrawals`
+--
+ALTER TABLE `withdrawals`
+  ADD CONSTRAINT `withdrawals_ibfk_1` FOREIGN KEY (`asset_id`) REFERENCES `assets` (`id`),
+  ADD CONSTRAINT `withdrawals_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
