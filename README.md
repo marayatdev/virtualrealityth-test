@@ -1,3 +1,23 @@
+# Virtual Reality Backend Technical Test
+
+This project is a backend technical assessment for Virtual Reality.
+
+Implemented with:
+
+- Node.js
+- TypeScript
+- Express
+- MySQL
+
+Features include:
+
+- User Authentication
+- Wallet
+- Deposit / Withdraw
+- Internal Transfer
+- Order Book
+- Trade Matching
+
 ## ⚙️ วิธีติดตั้ง Project
 
 1. git clone https://github.com/marayatdev/virtualrealityth-test.git
@@ -26,17 +46,6 @@
 
 เป็นรูป ชื่อไฟล์ ER-Diagram.png
 หรือเข้าลิ้งค์นี้ : https://drawsql.app/teams/chawalit-marayat/diagrams/test
-
----
-
-## 🚀 เทคโนโลยีที่ใช้
-
-- Node.js
-- TypeScript
-- Express.js
-- MySQL
-- JWT Authentication
-- UUID
 
 ---
 
