@@ -3,21 +3,20 @@
 1. git clone https://github.com/marayatdev/virtualrealityth-test.git
 2. cd server
 3. ใช้คำสั่ง yarn install เพื่อติดตั้ง node และ dependencies
-4. import SQL ชื่อไฟล์ virtualrealityth.sql (ถ้าไฟล์ใช้ไม่ได้ให้ใช้คำสั่งสร้างในไฟล์ sql.txt)
-5. yarn seed เพิ่มข้อมูลเริ่มต้นไว้
-6. yarn seed:reset ล้างข้อมูลทั้งหมด
-7. ตั้งค่า .env
+4. ตั้งค่า .env
 
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
-
+DB_NAME=virtualrealityth
+DB_USER=root
+DB_PASSWORD=rootpassword
 PORT=8000
 JWT_SECRET=zxxxxxz
 REFRESH_SECRET=zxxxxxxz
 
+5. import SQL ชื่อไฟล์ virtualrealityth.sql (ถ้าไฟล์ใช้ไม่ได้ให้ใช้คำสั่งสร้างในไฟล์ sql.txt)
+6. yarn seed เพิ่มข้อมูลเริ่มต้นไว้
+7. yarn seed:reset ล้างข้อมูลทั้งหมด
 8. yarn dev
 9. เพิ่ม postman_collection ด้วยไฟล์ virtualrealityth.postman_collection.json
 
